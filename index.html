@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>GC-viewer</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./theme.js"></script>
+  <meta name="application-name" content="GC-viewer">
+</head>
+<body>
+  <a class="skip-link" href="#figure-workspace">Skip to figure</a>
+
+  <div class="atlas-shell">
+    <header class="masthead">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+        </div>
+        <div>
+          <p class="eyebrow">Gaia DR3 · CARMA</p>
+          <h1>GC-viewer</h1>
+        </div>
+      </div>
+      <button id="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">Dark mode</button>
+      <div class="masthead-context">
+        <p>CARMA age–metallicity and clean Gaia CMDs.</p>
+        <div class="summary-line" id="summary-line" aria-live="polite">
+          Loading the prepared catalogue…
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <nav class="figure-panel" aria-label="Cluster comparison">
+        <div class="rail-heading">
+          <p class="eyebrow">Cluster comparison</p><button id="compare-multiple" type="button" aria-pressed="false">Compare multiple: Off</button><button id="clear-comparison" type="button">Clear</button><div id="comparison-selection"></div><p id="comparison-status" role="status"></p>
+          <p class="rail-note">Select clusters in the age–metallicity plane or search by name. Press Shift to switch comparison On/Off.</p>
+        </div>
+        <form id="plot-builder" class="plot-builder" hidden><p id="builder-status"></p></form>
+        <div class="rail-heading rail-search">
+          <div class="cluster-search" role="search">
+            <label class="cluster-search-label" for="cluster-search-input">
+              Find in current figure
+            </label>
+            <div class="cluster-search-control">
+              <span class="search-glyph" aria-hidden="true"></span>
+              <input
+                id="cluster-search-input"
+                type="search"
+                role="combobox"
+                placeholder="Type an NGC name…"
+                autocomplete="off"
+                spellcheck="false"
+                aria-autocomplete="list"
+                aria-controls="cluster-search-results"
+                aria-expanded="false"
+                aria-describedby="cluster-search-status"
+                disabled
+              >
+            </div>
+            <div
+              id="cluster-search-results"
+              class="cluster-search-results"
+              role="listbox"
+              aria-label="Clusters in the current figure"
+              hidden
+            ></div>
+            <p id="cluster-search-status" class="sr-only" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="rail-footnote">
+          <span class="target-key" aria-hidden="true"></span>
+          <span>Coloured rings identify clusters in the CMD comparison.</span>
+        </div>
+      </nav>
+
+      <div
+        id="resizer-left"
+        class="column-resizer"
+        role="separator"
+        aria-label="Resize figure index"
+        aria-orientation="vertical"
+        aria-valuemin="170"
+        aria-valuemax="360"
+        aria-valuenow="228"
+        tabindex="0"
+      ><span aria-hidden="true"></span></div>
+
+      <section class="figure-workspace" id="figure-workspace" aria-labelledby="figure-title">
+        <header class="figure-heading">
+          <div>
+            <p class="eyebrow" id="figure-group">CARMA clusters</p>
+            <h2 id="figure-title">Preparing the atlas</h2>
+            <p id="figure-description" class="figure-description">
+              Reading the exported stage-3 results.
+            </p>
+          </div>
+          <div class="figure-heading-tools">
+            <div id="figure-position" class="figure-position" aria-hidden="true">— / —</div>
+            <button id="reset-plot-views" type="button" class="text-button" hidden>Reset zoom</button>
+          </div>
+        </header>
+
+        <div id="figure-key" class="figure-key" aria-label="Figure legend"></div>
+
+        <div class="plot-frame">
+          <div id="figure-loading" class="plot-loading" role="status">
+            <span class="loading-orbit" aria-hidden="true"></span>
+            <span>Preparing figure</span>
+          </div>
+          <div id="figure-mount" class="figure-mount"></div>
+          <div id="point-tooltip" class="point-tooltip" role="tooltip" hidden></div>
+        </div>
+
+        <div
+          id="resizer-plot-height"
+          class="plot-height-resizer"
+          role="separator"
+          aria-label="Resize plot area height"
+          aria-orientation="horizontal"
+          aria-valuemin="220"
+          aria-valuemax="900"
+          aria-valuenow="400"
+          tabindex="0"
+        ><span aria-hidden="true"></span></div>
+
+        <footer class="figure-caption">
+          <span>Click or use Enter/Space on a point to select its cluster.</span>
+          <span id="figure-navigation-hint">Scroll or pinch to zoom · drag anywhere to pan · double-click resets.</span>
+        </footer>
+      </section>
+
+      <div
+        id="resizer-right"
+        class="column-resizer"
+        role="separator"
+        aria-label="Resize selected-cluster panel"
+        aria-orientation="vertical"
+        aria-valuemin="300"
+        aria-valuemax="1000"
+        aria-valuenow="392"
+        tabindex="0"
+      ><span aria-hidden="true"></span></div>
+
+      <aside class="instrument-rail" aria-label="Selected cluster">
+        <section class="instrument-card cmd-card" aria-labelledby="cmd-title">
+          <header class="instrument-heading">
+            <div>
+              <p class="eyebrow">Colour–magnitude diagram</p>
+              <h2 id="cmd-title">No cluster selected</h2>
+            </div>
+            <div class="cmd-controls" aria-label="CMD view controls">
+              <button id="cmd-zoom-in" type="button" class="icon-button" aria-label="Zoom in" disabled>+</button>
+              <button id="cmd-zoom-out" type="button" class="icon-button" aria-label="Zoom out" disabled>−</button>
+              <button id="cmd-reset" type="button" class="text-button" disabled>Reset</button>
+            </div>
+          </header>
+
+          <div class="cmd-stage" id="cmd-stage">
+            <canvas
+              id="cmd-canvas"
+              tabindex="0"
+              role="img"
+              aria-label="Interactive colour-magnitude diagram. Select a cluster first."
+            ></canvas>
+
+            <div id="cmd-empty" class="cmd-empty">
+              <div class="empty-reticle" aria-hidden="true"><span></span></div>
+              <p>Choose a cluster in the figure</p>
+              <span>The CMD and CARMA measurements will appear here.</span>
+            </div>
+
+            <div id="cmd-loading" class="cmd-state" hidden>
+              <span class="loading-orbit" aria-hidden="true"></span>
+              <p>Loading CMD</p>
+            </div>
+
+            <div id="cmd-error" class="cmd-state cmd-error" hidden>
+              <p>CMD unavailable</p>
+              <span id="cmd-error-message"></span>
+            </div>
+          </div>
+
+          <div id="cmd-legend" class="cmd-legend"></div>
+          <label class="cmd-dot-size-control" for="cmd-dot-size">
+            <span>CMD dot size</span>
+            <input id="cmd-dot-size" type="range" min="0.5" max="4" step="0.1" value="1.6">
+            <output id="cmd-dot-size-value" for="cmd-dot-size">1.6 px</output>
+          </label>
+          <p class="cmd-hint">Scroll inside the axes to zoom · drag to pan · double-click to reset</p>
+        </section>
+
+        <section class="instrument-card information-card" aria-labelledby="cluster-title">
+          <header class="instrument-heading">
+            <div>
+              <p class="eyebrow">CARMA measurements</p>
+              <h2 id="cluster-title">Awaiting selection</h2>
+            </div>
+            <span id="cluster-origin" class="origin-badge" hidden></span>
+          </header>
+
+          <div id="info-empty" class="info-empty">
+            <p>Click a globular cluster to inspect its CARMA age, metallicity and reddening.</p>
+          </div>
+
+          <div class="carma-table-scroll"><table id="info-values" class="carma-table" aria-label="CARMA cluster measurements" hidden></table></div>
+
+          <div id="count-strip" class="count-strip" hidden aria-label="Population counts"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="atlas-footer">
+      <p>Developed with assistance from ChatGPT (OpenAI Codex).
+        <a href="./ACKNOWLEDGEMENTS.md">Acknowledgements and data sources</a>
+      </p>
+      <details class="source-credits">
+        <summary>Data credits</summary>
+        <p>Gaia DR3: ESA / Gaia / DPAC.
+          Cluster ages, [M/H], reddening and distance moduli:
+          <a href="https://www.oas.inaf.it/en/research/m2-en/carma-en/">CARMA</a>
+          (Massari et al. 2023 and subsequent CARMA papers; catalogue: 21 October 2026).
+          RR Lyrae: <a href="https://doi.org/10.1051/0004-6361/202243964">Clementini et al. (2023)</a>.
+          Per-star corrections: <a href="https://www.aanda.org/articles/aa/pdf/2024/12/aa47633-23.pdf">Martin et al. (2024)</a>
+          and <a href="https://doi.org/10.1093/mnras/stab2304">Casagrande et al. (2021)</a>.
+        </p>
+      </details>
+
+      <p>
+        Prepared from
+        <code>hb_indices_basti_carma_boxes.ipynb</code>.
+        Corrected Gaia photometry, units, and CARMA provenance are preserved.
+      </p>
+      <details>
+        <summary>Provenance</summary>
+        <div id="provenance-content">Loading…</div>
+      </details>
+    </footer>
+  </div>
+
+  <div id="global-status" class="sr-only" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <div class="fatal-message">
+      This atlas needs JavaScript enabled to render the notebook data.
+    </div>
+  </noscript>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
